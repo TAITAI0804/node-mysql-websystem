@@ -13,17 +13,36 @@
   <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <form action="/" method="post">
+      <form action="/add" method="post">
         <label>タスクの追加</label>
-        <input required type="text" name="add" placeholder="何をする?"/>
+        <input required type="text" name="add" placeholder="何をする?"/><br>
+        <label>期限　　　　</label>
+        <input type="date" id="date" name="date"/>
         <input class="btn btn-primary" type="submit" value="追加"/>
       </form>
     </div>
     <div class="col-md-6">
       <ul>
-        <% for(let todo of todos){ %>
-          <li><span><%= todo.content %></span></li>
-        <% } %>
+        <form action="/check" method="post">
+        <% todos.forEach((todo, index) => { %>
+          <%   const date = new Date(todo.event_date);
+            const year = date.getFullYear();
+            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+            const day = ("0" + date.getDate()).slice(-2);
+            const week=date.getDay();
+            const weekNames = ["日", "月", "火", "水", "木", "金", "土"];
+            const weekName = weekNames[week];
+            const formattedDate = year + "-" + month + "-" + day + " (" + weekName + ")";
+          %>
+          <% if (todo.checked) { %>
+            <li><del><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></del></li>
+          <% } else { %>
+             <li><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></li>
+          <% } %>
+            <input type="hidden" name="checked_id[<%= index %>]" value="<%= todo.id %>">
+          <% }) %>
+          <input class="btn btn-primary" type="submit" value="保存"/>
+          </form>
       </ul>
     </div>
   </div>

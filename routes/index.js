@@ -32,12 +32,13 @@ router.get('/', function (req, res, next) {
   }
 });
 
-router.post('/', function (req, res, next) {
+router.post('/add', function (req, res, next) {
   const isAuth = req.isAuthenticated();
   const userId = req.user.id;
   const todo = req.body.add;
+  const date = req.body.date;
   knex("tasks")
-    .insert({user_id: userId, content: todo})
+    .insert({user_id: userId, content: todo, event_date: date, checked: 0})
     .then(function () {
       res.redirect('/')
     })
@@ -49,6 +50,22 @@ router.post('/', function (req, res, next) {
         errorMessage: [err.sqlMessage],
       });
     });
+});
+
+router.post('/check', async (req, res) => {
+  const checked = req.body.checked || {};
+  const checked_id = req.body.checked_id || {};
+
+  for (const key in checked_id) {
+    const id = checked_id[key];          // ← ここは数値になる
+    const isChecked = checked[key] ? true : false;
+
+    await knex('tasks')
+      .where({ id:id })                     // ← id は数値なので AssertionError が消える
+      .update({ checked: isChecked });   // ← update が空にならない
+  }
+
+  res.redirect('/');
 });
 
 router.use('/signup', require('./signup'));
