@@ -36,9 +36,10 @@ router.post('/add', function (req, res, next) {
   const isAuth = req.isAuthenticated();
   const userId = req.user.id;
   const todo = req.body.add;
-  const date = req.body.date;
+  const start_date = req.body.start_date;
+  const end_date = req.body.end_date;
   knex("tasks")
-    .insert({user_id: userId, content: todo, event_date: date, checked: 0})
+    .insert({user_id: userId, content: todo, start_date: start_date, event_date: end_date, checked: 0})
     .then(function () {
       res.redirect('/')
     })
@@ -66,6 +67,30 @@ router.post('/check', async (req, res) => {
   }
 
   res.redirect('/');
+});
+
+router.get('/events.json', function (req, res) {
+  if (!req.isAuthenticated()) return res.json([]);
+  const userId = req.user.id;
+  knex("tasks")
+    .select("*")
+    .where({user_id: userId})
+    .then(function (results) {
+      const events = results.map(function(todo) {
+        return {
+          id: todo.id,
+          title: todo.content,
+          start: todo.start_date,
+          end: todo.event_date,
+          allDay: true,
+          color: todo.checked ? '#6c757d' : '#0d6efd'
+        };
+      });
+      res.json(events);
+    })
+    .catch(function (err) {
+      res.status(500).json([]);
+    });
 });
 
 router.use('/signup', require('./signup'));

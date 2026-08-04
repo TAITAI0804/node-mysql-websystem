@@ -21,8 +21,10 @@
       <form action="/add" method="post">
         <label>タスクの追加</label>
         <input required type="text" name="add" placeholder="何をする?"/><br>
-        <label>期限　　　　</label>
-        <input type="date" id="date" name="date"/>
+        <label>開始日　　　</label>
+        <input type="date" id="start-date" name="start_date"/>
+        <label>終了日　　　</label>
+        <input type="date" id="end_date" name="end_date"/>
         <input class="btn btn-primary" type="submit" value="追加"/>
       </form><br>
       <div id="calendar" class="calendar"></div>
@@ -43,11 +45,11 @@
           <% if (todo.checked) { %>
             <li><del><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></del></li>
           <% } else { %>
-             <li><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></li>
+            <li><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></li>
           <% } %>
             <input type="hidden" name="checked_id[<%= index %>]" value="<%= todo.id %>">
           <% }) %>
-          <input class="btn btn-primary" type="submit" value="保存"/>
+            <input class="btn btn-primary" type="submit" value="保存"/>
           </form>
       </ul>
     </div>
@@ -67,33 +69,35 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-            locale: 'ja',
-            themeSystem: 'bootstrap5',
-            initialView: 'dayGridMonth',
-            height: 500,
-            fontsize: '10px',
-            headerToolbar: {
-                left: 'prevYear,prev,next,nextYear today',
-                center: 'title',
-                right: ''//'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            },
-            buttonText: {
-                //today: '今日',      // todayの表示ラベル
-                //month: '月表示',    // dayGridMonthの表示ラベル
-                //week: '週表示',     // timeGridWeekの表示ラベル
-                //day: '日表示',      // timeGridDayの表示ラベル
-            },
-            buttonIcons: {  // 要Bootstrap-icons
-                prev: 'chevron-left',      // 前月のアイコン
-                next: 'chevron-right',     // 来月のアイコン
-                prevYear: 'chevrons-left', // 前年のアイコン
-                nextYear: 'chevrons-right' // 来年のアイコン
-            },
-        });
-
-        calendar.render();
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+      locale: 'ja',
+      themeSystem: 'bootstrap5',
+      initialView: 'dayGridMonth',
+      height: 500,
+      fontsize: '10px',
+      headerToolbar: {
+        left: 'prevYear,prev,next,nextYear today',
+        center: 'title',
+        right: ''//'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      buttonText: {
+        //today: '今日',      // todayの表示ラベル
+        //month: '月表示',    // dayGridMonthの表示ラベル
+        //week: '週表示',     // timeGridWeekの表示ラベル
+        //day: '日表示',      // timeGridDayの表示ラベル
+      },
+      buttonIcons: {  // 要Bootstrap-icons
+        prev: 'chevron-left',      // 前月のアイコン
+        next: 'chevron-right',     // 来月のアイコン
+        prevYear: 'chevrons-left', // 前年のアイコン
+        nextYear: 'chevrons-right' // 来年のアイコン
+      },
+      
+      events: '/events.json'
     });
+    calendar.render();
+  });
+
 </script>
 </body>
