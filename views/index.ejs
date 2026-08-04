@@ -10,6 +10,14 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+      table ,
+      table th,
+      table td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
 </head>
 <body>
 <%- include('./error_messages'); %>
@@ -30,8 +38,18 @@
       <div id="calendar" class="calendar"></div>
     </div>
     <div class="col-md-6">
-      <ul>
-        <form action="/check" method="post">
+      <form action="/check" method="post">
+      <table width="600">
+        <thead>
+          <tr>
+            <th>タスク</th>
+            <th>開始日</th>
+            <th>終了日</th>
+            <th>チェック</th>
+          </tr>
+        </thead>
+        <tbody>
+       
         <% todos.forEach((todo, index) => { %>
           <%   const date = new Date(todo.event_date);
             const year = date.getFullYear();
@@ -40,18 +58,29 @@
             const week=date.getDay();
             const weekNames = ["日", "月", "火", "水", "木", "金", "土"];
             const weekName = weekNames[week];
-            const formattedDate = year + "-" + month + "-" + day + " (" + weekName + ")";
+            const formattedeDate = year + "-" + month + "-" + day + " (" + weekName + ")";
+          %><%   const sdate = new Date(todo.start_date);
+            const syear = sdate.getFullYear();
+            const smonth = ("0" + (sdate.getMonth() + 1)).slice(-2);
+            const sday = ("0" + sdate.getDate()).slice(-2);
+            const sweek=sdate.getDay();
+            const sweekNames = ["日", "月", "火", "水", "木", "金", "土"];
+            const sweekName = sweekNames[sweek];
+            const formattedsDate = syear + "-" + smonth + "-" + sday + " (" + sweekName + ")";
           %>
+          <tr>
           <% if (todo.checked) { %>
-            <li><del><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></del></li>
+            <td><del><span><%= todo.content %></span></del></td></del><td><time><%= formattedsDate %></time></td><td><time><%= formattedeDate %></time></td><td><input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></td>
           <% } else { %>
-            <li><span><%= todo.content %></span> (<time><%= formattedDate %></time>) <input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></li>
+            <td><span><%= todo.content %></span></td><td><time><%= formattedsDate %></time></td><td><time><%= formattedeDate %></time></td><td><input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></td>
           <% } %>
-            <input type="hidden" name="checked_id[<%= index %>]" value="<%= todo.id %>">
-          <% }) %>
-            <input class="btn btn-primary" type="submit" value="保存"/>
-          </form>
-      </ul>
+            <input type="hidden" name="checked_id[<%= index %>]" value="<%= todo.id %>"> 
+            </tr>   
+          <% }) %> 
+        </tbody>
+      </table>
+      <br><input class="btn btn-primary" type="submit" value="保存"/>
+      </form>
     </div>
   </div>
 </div>
