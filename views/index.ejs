@@ -14,9 +14,26 @@
       table ,
       table th,
       table td {
-        border: 1px solid black;
+        border: 1px solid #000000;
         border-collapse: collapse;
       }
+
+      .content {
+        width: 180px;
+      }
+      .data {
+        width: 150px;
+      }
+      .check {
+        width: 50px;
+      }
+
+      .simple-box1 {
+    border: 2px solid #000000 ; /* 太さ2px、実践、黒色*/
+    width: 550px ; /* 幅 */
+    height: 130px ; /* 高さ */
+    padding: 10px;
+    }
     </style>
 </head>
 <body>
@@ -26,26 +43,28 @@
   <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <form action="/add" method="post">
-        <label>タスクの追加</label>
-        <input required type="text" name="add" placeholder="何をする?"/><br>
-        <label>開始日　　　</label>
-        <input type="date" id="start-date" name="start_date"/>
-        <label>終了日　　　</label>
-        <input type="date" id="end_date" name="end_date"/>
-        <input class="btn btn-primary" type="submit" value="追加"/>
-      </form><br>
+      <div class="simple-box1">
+        <form action="/add" method="post">
+          <label>タスクの追加</label>
+          <input required type="text" name="add" placeholder="何をする?"/><br>
+          <label>開始日　　　</label>
+          <input type="date" id="start-date" name="start_date"/>
+          <label>終了日　　　</label>
+          <input type="date" id="end_date" name="end_date"/>
+          <input class="btn btn-primary" type="submit" value="追加"/>
+        </form>
+      </div><br>
       <div id="calendar" class="calendar"></div>
     </div>
     <div class="col-md-6">
       <form action="/check" method="post">
-      <table width="600">
+      <table>
         <thead>
           <tr>
-            <th>タスク</th>
-            <th>開始日</th>
-            <th>終了日</th>
-            <th>チェック</th>
+            <th class="content">タスク</th>
+            <th class="data">開始日</th>
+            <th class="data">終了日</th>
+            <th class="check">チェック</th>
           </tr>
         </thead>
         <tbody>
