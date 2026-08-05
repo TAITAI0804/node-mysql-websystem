@@ -93,6 +93,22 @@ router.get('/events.json', function (req, res) {
     });
 });
 
+router.post('/delete/:id', async (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  const userId = req.user.id;
+  const id = req.params.id;
+
+  try {
+    await knex('tasks')
+      .where({ id: id, user_id: userId }) // user_idも条件に入れて他人のタスクを消せないようにする
+      .del();
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
 router.use('/signup', require('./signup'));
 router.use('/signin', require('./signin'));
 router.use('/logout', require('./logout'));

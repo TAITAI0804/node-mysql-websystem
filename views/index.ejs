@@ -25,13 +25,16 @@
         width: 150px;
       }
       .check {
+        width: 60px;
+      }
+      .del {
         width: 50px;
       }
 
       .simple-box1 {
     border: 2px solid #000000 ; /* 太さ2px、実践、黒色*/
     width: 550px ; /* 幅 */
-    height: 130px ; /* 高さ */
+    height: 150px ; /* 高さ */
     padding: 10px;
     }
     </style>
@@ -44,16 +47,52 @@
   <div class="row">
     <div class="col-md-6">
       <div class="simple-box1">
-        <form action="/add" method="post">
-          <label>タスクの追加</label>
-          <input required type="text" name="add" placeholder="何をする?"/><br>
-          <label>開始日　　　</label>
-          <input type="date" id="start-date" name="start_date"/>
-          <label>終了日　　　</label>
-          <input type="date" id="end_date" name="end_date"/>
-          <input class="btn btn-primary" type="submit" value="追加"/>
+        <form action="/add" method="post" id="add-form">
+          <label for="add-content">タスクの追加</label>
+          <input required type="text" id="add-content" name="add" placeholder="何をする?"/><br>
+          <label for="start-date">開始日　　　</label>
+          <input required type="date" id="start-date" name="start_date"/>
+          <label for="end_date">終了日　　　</label>
+          <input required type="date" id="end_date" name="end_date"/>
+          <input class="btn btn-primary" type="submit" value="追加" id="add-submit" disabled/>
+          <div id="date-error" class="text-danger" style="display:none;">開始日は終了日より前の日付にしてください</div>
         </form>
-      </div><br>
+      </div>
+
+      <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('add-form');
+        const content = document.getElementById('add-content');
+        const startInput = document.getElementById('start-date');
+        const endInput = document.getElementById('end_date');
+        const submitBtn = document.getElementById('add-submit');
+        const errorMsg = document.getElementById('date-error');
+
+        function validate() {
+          const start = startInput.value;
+          const end = endInput.value;
+          const hasContent = content.value.trim().length > 0;
+          const hasDates = start && end;
+          const datesValid = hasDates && start <= end;
+
+          errorMsg.style.display = (hasDates && !datesValid) ? 'block' : 'none';
+
+          submitBtn.disabled = !(hasContent && datesValid);
+        }
+
+        [content, startInput, endInput].forEach(el => {
+          el.addEventListener('input', validate);
+          el.addEventListener('change', validate);
+        });
+
+        // 念のため送信時にも二重チェック
+        form.addEventListener('submit', function(e) {
+          if (submitBtn.disabled) {
+            e.preventDefault();
+          }
+        });
+      });
+      </script><br>
       <div id="calendar" class="calendar"></div>
     </div>
     <div class="col-md-6">
@@ -65,6 +104,7 @@
             <th class="data">開始日</th>
             <th class="data">終了日</th>
             <th class="check">チェック</th>
+            <th class="del">削除</th>
           </tr>
         </thead>
         <tbody>
@@ -89,11 +129,30 @@
           %>
           <tr>
           <% if (todo.checked) { %>
-            <td><del><span><%= todo.content %></span></del></td></del><td><time><%= formattedsDate %></time></td><td><time><%= formattedeDate %></time></td><td><input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></td>
-          <% } else { %>
-            <td><span><%= todo.content %></span></td><td><time><%= formattedsDate %></time></td><td><time><%= formattedeDate %></time></td><td><input type="checkbox" name="checked[<%= index %>]" value="1" <%= todo.checked ? 'checked' : '' %>></td>
-          <% } %>
-            <input type="hidden" name="checked_id[<%= index %>]" value="<%= todo.id %>"> 
+          <td><del><span><%= todo.content %></span></del></td>
+          <td><time><%= formattedsDate %></time></td>
+          <td><time><%= formattedeDate %></time></td>
+          <td><input type="checkbox" name="checked[<%= index %>]" value="1" checked></td>
+          <td>
+            <button type="submit"
+                    formaction="/delete/<%= todo.id %>"
+                    formmethod="post"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('このタスクを削除しますか?');">削除</button>
+          </td>
+        <% } else { %>
+          <td><span><%= todo.content %></span></td>
+          <td><time><%= formattedsDate %></time></td>
+          <td><time><%= formattedeDate %></time></td>
+          <td><input type="checkbox" name="checked[<%= index %>]" value="1"></td>
+          <td>
+            <button type="submit"
+                    formaction="/delete/<%= todo.id %>"
+                    formmethod="post"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('このタスクを削除しますか?');">削除</button>
+          </td>
+        <% } %>
             </tr>   
           <% }) %> 
         </tbody>
